@@ -1,0 +1,203 @@
+<div class="container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>
+        <mat-icon>assignment</mat-icon>
+        {{ isBrand ? 'Sponsorship Requests' : 'My Applications' }}
+      </h1>
+      <p class="subtitle">{{ isBrand ? 'Manage applications from influencers' : 'Track your campaign applications' }}</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <!-- Stats Summary -->
+    <div class="stats-row" *ngIf="requests.length > 0">
+      <mat-card class="mini-stat">
+        <mat-icon>inbox</mat-icon>
+        <div class="stat-info">
+          <span class="stat-number">{{ requests.length }}</span>
+          <span class="stat-label">Total</span>
+        </div>
+      </mat-card>
+      <mat-card class="mini-stat pending">
+        <mat-icon>schedule</mat-icon>
+        <div class="stat-info">
+          <span class="stat-number">{{ getPendingCount() }}</span>
+          <span class="stat-label">Pending</span>
+        </div>
+      </mat-card>
+      <mat-card class="mini-stat accepted">
+        <mat-icon>check_circle</mat-icon>
+        <div class="stat-info">
+          <span class="stat-number">{{ getAcceptedCount() }}</span>
+          <span class="stat-label">Accepted</span>
+        </div>
+      </mat-card>
+      <mat-card class="mini-stat completed">
+        <mat-icon>verified</mat-icon>
+        <div class="stat-info">
+          <span class="stat-number">{{ getCompletedCount() }}</span>
+          <span class="stat-label">Completed</span>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Request Cards -->
+    <div class="requests-grid" *ngIf="requests.length > 0">
+      <mat-card *ngFor="let request of requests" class="request-card" [ngClass]="'status-border-' + request.status.toLowerCase()">
+        <mat-card-header>
+          <div mat-card-avatar class="avatar">
+            <mat-icon>{{ isBrand ? 'person' : 'business' }}</mat-icon>
+          </div>
+          <mat-card-title>{{ isBrand ? request.influencer?.name : request.campaign?.brand?.name }}</mat-card-title>
+          <mat-card-subtitle>{{ request.campaign?.name }}</mat-card-subtitle>
+          <span class="status-chip" [ngClass]="'status-' + request.status.toLowerCase()">
+            {{ request.status }}
+          </span>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="proposal-section">
+            <h4>Proposal</h4>
+            <p>{{ request.proposal }}</p>
+          </div>
+
+          <div class="details-row">
+            <div class="detail-item">
+              <mat-icon>attach_money</mat-icon>
+              <span>Budget: ${{ request.campaign?.budget | number }}</span>
+            </div>
+            <div class="detail-item">
+              <mat-icon>event</mat-icon>
+              <span>Applied: {{ request.createdAt | date:'mediumDate' }}</span>
+            </div>
+            <div class="detail-item">
+              <mat-icon>devices</mat-icon>
+              <span>{{ request.campaign?.platform }}</span>
+            </div>
+          </div>
+
+          <!-- Work Status Section -->
+          <div class="work-status-section" *ngIf="request.status === 'ACCEPTED'">
+            <h4>Work Status</h4>
+            <div class="work-status-item">
+              <mat-icon [class.submitted]="hasWorkSubmitted(request)">
+                {{ hasWorkSubmitted(request) ? 'check_circle' : 'radio_button_unchecked' }}
+              </mat-icon>
+              <span>Work Submitted</span>
+            </div>
+            <div class="work-status-item">
+              <mat-icon [class.completed]="hasWorkCompleted(request)">
+                {{ hasWorkCompleted(request) ? 'verified' : 'radio_button_unchecked' }}
+              </mat-icon>
+              <span>Work Approved</span>
+            </div>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <!-- Brand Actions -->
+          <ng-container *ngIf="isBrand">
+            <!-- PENDING: Accept or Reject -->
+            <ng-container *ngIf="request.status === 'PENDING'">
+              <button mat-raised-button color="primary" (click)="updateStatus(request.id, 'ACCEPTED')">
+                <mat-icon>check</mat-icon> Accept
+              </button>
+              <button mat-stroked-button color="warn" (click)="updateStatus(request.id, 'REJECTED')">
+                <mat-icon>close</mat-icon> Reject
+              </button>
+            </ng-container>
+
+            <!-- ACCEPTED: Mark work as complete first -->
+            <ng-container *ngIf="request.status === 'ACCEPTED'">
+              <ng-container *ngIf="!hasWorkCompleted(request)">
+                <button mat-raised-button color="accent" (click)="markWorkAsComplete(request)"
+                        [disabled]="!hasWorkSubmitted(request)">
+                  <mat-icon>done_all</mat-icon> Approve Work
+                </button>
+              </ng-container>
+              <ng-container *ngIf="hasWorkCompleted(request) && !hasPaymentCompleted(request)">
+                <button mat-raised-button color="primary" (click)="openPaymentDialog(request)">
+                  <mat-icon>payment</mat-icon> Make Payment
+                </button>
+              </ng-container>
+              <ng-container *ngIf="hasPaymentCompleted(request)">
+                <button mat-stroked-button color="primary" [disabled]="true">
+                  <mat-icon>check_circle</mat-icon> Payment Completed
+                </button>
+              </ng-container>
+            </ng-container>
+
+            <!-- COMPLETED: Payment done, rating available -->
+            <ng-container *ngIf="request.status === 'COMPLETED'">
+              <button mat-stroked-button color="accent" [disabled]="true">
+                <mat-icon>check_circle</mat-icon> Payment Completed
+              </button>
+              <ng-container *ngIf="!hasUserRated(request)">
+                <button mat-stroked-button color="warn" (click)="openRatingDialog(request)">
+                  <mat-icon>star</mat-icon> Rate Influencer
+                </button>
+              </ng-container>
+              <ng-container *ngIf="hasUserRated(request)">
+                <button mat-stroked-button color="primary" [disabled]="true">
+                  <mat-icon>star</mat-icon> {{ getRatingStars(getUserRating(request).score) }} Rated
+                </button>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+
+          <!-- Influencer Actions -->
+          <ng-container *ngIf="isInfluencer">
+            <ng-container *ngIf="request.status === 'COMPLETED'">
+              <ng-container *ngIf="!hasUserRated(request)">
+                <button mat-raised-button color="warn" (click)="openRatingDialog(request)">
+                  <mat-icon>star</mat-icon> Rate Brand
+                </button>
+              </ng-container>
+              <ng-container *ngIf="hasUserRated(request)">
+                <button mat-stroked-button color="primary" [disabled]="true">
+                  <mat-icon>star</mat-icon> {{ getRatingStars(getUserRating(request).score) }} Rated
+                </button>
+              </ng-container>
+            </ng-container>
+            <span *ngIf="request.status === 'PENDING'" class="waiting-text">
+              <mat-icon>hourglass_empty</mat-icon> Waiting for response
+            </span>
+            <ng-container *ngIf="request.status === 'ACCEPTED'">
+              <ng-container *ngIf="!hasWorkSubmitted(request)">
+                <button mat-raised-button color="primary" (click)="submitWork(request)">
+                  <mat-icon>publish</mat-icon> Submit Work
+                </button>
+              </ng-container>
+              <ng-container *ngIf="hasWorkSubmitted(request) && !hasWorkCompleted(request)">
+                <span class="info-text">
+                  <mat-icon>schedule</mat-icon> Waiting for brand approval
+                </span>
+              </ng-container>
+              <ng-container *ngIf="hasWorkCompleted(request)">
+                <span class="success-text">
+                  <mat-icon>verified</mat-icon> Work approved! Payment pending
+                </span>
+              </ng-container>
+            </ng-container>
+            <span *ngIf="request.status === 'REJECTED'" class="rejected-text">
+              <mat-icon>block</mat-icon> Application rejected
+            </span>
+          </ng-container>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <div *ngIf="requests.length === 0" class="empty-state">
+      <mat-icon>assignment</mat-icon>
+      <h3>No {{ isBrand ? 'requests' : 'applications' }} yet</h3>
+      <p *ngIf="!isBrand">Browse campaigns and apply to get started</p>
+      <p *ngIf="isBrand">Create campaigns to start receiving applications from influencers</p>
+    </div>
+  </ng-container>
+</div>
+

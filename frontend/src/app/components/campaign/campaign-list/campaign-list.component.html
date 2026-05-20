@@ -1,0 +1,114 @@
+<div class="container">
+  <div class="page-header">
+    <h1>{{ isBrand ? 'My Campaigns' : 'Browse Campaigns' }}</h1>
+    <button mat-raised-button color="primary" (click)="createCampaign()" *ngIf="isBrand">
+      <mat-icon>add</mat-icon>
+      Create Campaign
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <mat-card class="filter-card">
+    <div class="filters">
+      <mat-form-field appearance="outline">
+        <mat-label>Search</mat-label>
+        <input matInput [(ngModel)]="searchName" (input)="applyFilters()" placeholder="Search by name">
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Platform</mat-label>
+        <mat-select [(ngModel)]="filterPlatform" (selectionChange)="applyFilters()">
+          <mat-option value="">All Platforms</mat-option>
+          <mat-option *ngFor="let platform of platforms" [value]="platform">{{ platform }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" *ngIf="isBrand">
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="filterStatus" (selectionChange)="applyFilters()">
+          <mat-option value="">All Statuses</mat-option>
+          <mat-option *ngFor="let status of statuses" [value]="status">{{ status }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Application Filter for Influencers -->
+      <mat-form-field appearance="outline" *ngIf="isInfluencer">
+        <mat-label>Application Status</mat-label>
+        <mat-select [(ngModel)]="filterApplication" (selectionChange)="applyFilters()">
+          <mat-option value="">All Campaigns</mat-option>
+          <mat-option value="applied">Applied</mat-option>
+          <mat-option value="not-applied">Not Applied</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-button (click)="clearFilters()">Clear Filters</button>
+    </div>
+  </mat-card>
+
+  <div *ngIf="isLoading" class="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <div class="card-grid" *ngIf="filteredCampaigns.length > 0">
+      <mat-card *ngFor="let campaign of filteredCampaigns" class="campaign-card" (click)="viewCampaign(campaign.id)">
+        <mat-card-header>
+          <mat-card-title>{{ campaign.name }}</mat-card-title>
+          <mat-card-subtitle>
+            <span *ngIf="!isBrand">{{ campaign.brand?.name }} • </span>
+            {{ campaign.platform }}
+          </mat-card-subtitle>
+          <!-- Applied Badge for Influencers -->
+          <span *ngIf="isInfluencer && hasApplied(campaign.id)" class="applied-badge">
+            <mat-icon>check_circle</mat-icon> Applied
+          </span>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ campaign.description | slice:0:120 }}{{ campaign.description && campaign.description.length > 120 ? '...' : '' }}</p>
+          <div class="campaign-info">
+            <div class="info-row">
+              <mat-icon>attach_money</mat-icon>
+              <span>Budget: ${{ campaign.budget | number }}</span>
+            </div>
+            <div class="info-row">
+              <mat-icon>event</mat-icon>
+              <span>{{ campaign.startDate | date:'shortDate' }} - {{ campaign.endDate | date:'shortDate' }}</span>
+            </div>
+            <div class="info-row" *ngIf="campaign.eligibility">
+              <mat-icon>verified_user</mat-icon>
+              <span>{{ campaign.eligibility | slice:0:50 }}</span>
+            </div>
+          </div>
+          <span class="status-chip" [ngClass]="'status-' + campaign.status.toLowerCase()">
+            {{ campaign.status }}
+          </span>
+        </mat-card-content>
+        <mat-card-actions *ngIf="isBrand">
+          <button mat-button color="primary" (click)="editCampaign(campaign.id); $event.stopPropagation()">
+            <mat-icon>edit</mat-icon> Edit
+          </button>
+          <button mat-button color="warn" (click)="deleteCampaign(campaign.id, $event)">
+            <mat-icon>delete</mat-icon> Delete
+          </button>
+        </mat-card-actions>
+        <mat-card-actions *ngIf="isInfluencer">
+          <button mat-button color="primary" *ngIf="!hasApplied(campaign.id)">
+            <mat-icon>send</mat-icon> Apply Now
+          </button>
+          <button mat-button *ngIf="hasApplied(campaign.id)" disabled>
+            <mat-icon>check</mat-icon> Already Applied
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <div *ngIf="filteredCampaigns.length === 0" class="empty-state">
+      <mat-icon>campaign</mat-icon>
+      <h3>No campaigns found</h3>
+      <p *ngIf="isBrand">Create your first campaign to get started</p>
+      <p *ngIf="!isBrand">Try adjusting your filters or check back later</p>
+    </div>
+  </ng-container>
+</div>
+

@@ -1,0 +1,72 @@
+<div class="container">
+  <div class="page-header">
+    <h1>
+      <mat-icon>star</mat-icon>
+      My Ratings & Reviews
+    </h1>
+    <p class="subtitle">See what others are saying about your work</p>
+  </div>
+
+  <mat-card class="summary-card" *ngIf="ratings.length > 0">
+    <div class="summary-content">
+      <div class="big-rating">
+        <span class="rating-number">{{ averageRating | number:'1.1-1' }}</span>
+        <div class="stars">
+          <mat-icon *ngFor="let star of [1,2,3,4,5]"
+                    [class.filled]="star <= averageRating">
+            {{ star <= averageRating ? 'star' : 'star_border' }}
+          </mat-icon>
+        </div>
+        <span class="review-count">Based on {{ ratings.length }} review{{ ratings.length > 1 ? 's' : '' }}</span>
+      </div>
+      <div class="rating-breakdown">
+        <div class="breakdown-row" *ngFor="let num of [5,4,3,2,1]">
+          <span class="star-label">{{ num }} stars</span>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getPercentage(num)"></div>
+          </div>
+          <span class="count">{{ getCountForRating(num) }}</span>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+
+  <div *ngIf="isLoading" class="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <h2 *ngIf="ratings.length > 0" class="section-title">Recent Reviews</h2>
+
+    <div class="ratings-grid" *ngIf="ratings.length > 0">
+      <mat-card *ngFor="let rating of ratings" class="rating-card">
+        <mat-card-header>
+          <div mat-card-avatar class="rater-avatar">
+            <mat-icon>person</mat-icon>
+          </div>
+          <mat-card-title>{{ rating.rater?.name }}</mat-card-title>
+          <mat-card-subtitle>{{ rating.campaign?.name }}</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="rating-stars">
+            <mat-icon *ngFor="let star of [1,2,3,4,5]"
+                      [class.filled]="star <= rating.score">
+              {{ star <= rating.score ? 'star' : 'star_border' }}
+            </mat-icon>
+            <span class="rating-date">{{ rating.createdAt | date:'mediumDate' }}</span>
+          </div>
+          <p class="feedback" *ngIf="rating.feedback">"{{ rating.feedback }}"</p>
+          <p class="no-feedback" *ngIf="!rating.feedback">No written feedback provided</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div *ngIf="ratings.length === 0" class="empty-state">
+      <mat-icon>star_border</mat-icon>
+      <h3>No ratings yet</h3>
+      <p>Complete campaigns to receive ratings and build your reputation</p>
+    </div>
+  </ng-container>
+</div>
+

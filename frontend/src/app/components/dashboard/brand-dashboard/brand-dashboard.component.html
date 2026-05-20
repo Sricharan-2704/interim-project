@@ -1,0 +1,140 @@
+<div class="container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>
+        <mat-icon>business</mat-icon>
+        Brand Dashboard
+      </h1>
+      <p class="subtitle">Manage your campaigns and sponsorships</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="createCampaign()">
+      <mat-icon>add</mat-icon>
+      Create Campaign
+    </button>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    <mat-spinner></mat-spinner>
+    <p>Loading your dashboard...</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <mat-icon>error</mat-icon>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="loadData()">Retry</button>
+  </div>
+
+  <ng-container *ngIf="!isLoading && !error">
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-icon>campaign</mat-icon>
+        <h2>{{ campaigns.length }}</h2>
+        <p>Total Campaigns</p>
+      </mat-card>
+      <mat-card class="stat-card active">
+        <mat-icon>play_circle</mat-icon>
+        <h2>{{ activeCampaigns }}</h2>
+        <p>Active</p>
+      </mat-card>
+      <mat-card class="stat-card completed">
+        <mat-icon>check_circle</mat-icon>
+        <h2>{{ completedCampaigns }}</h2>
+        <p>Completed</p>
+      </mat-card>
+      <mat-card class="stat-card">
+        <mat-icon>pending</mat-icon>
+        <h2>{{ pendingRequests }}</h2>
+        <p>Pending Requests</p>
+      </mat-card>
+      <mat-card class="stat-card spending">
+        <mat-icon>payments</mat-icon>
+        <h2>${{ totalSpending | number:'1.0-0' }}</h2>
+        <p>Total Spending</p>
+      </mat-card>
+    </div>
+
+    <!-- Campaigns Section with Filter -->
+    <section class="campaigns-section">
+      <div class="section-header">
+        <h2>
+          <mat-icon>folder</mat-icon>
+          Your Campaigns
+        </h2>
+        <mat-form-field appearance="outline" class="status-filter">
+          <mat-label>Filter by Status</mat-label>
+          <mat-select [(value)]="selectedStatus" (selectionChange)="filterCampaigns()">
+            <mat-option *ngFor="let status of statuses" [value]="status">
+              {{ status === 'ALL' ? 'All Campaigns' : status }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="card-grid" *ngIf="filteredCampaigns.length > 0">
+        <mat-card *ngFor="let campaign of filteredCampaigns" class="campaign-card" (click)="viewCampaign(campaign.id)">
+          <mat-card-header>
+            <mat-card-title>{{ campaign.name }}</mat-card-title>
+            <mat-card-subtitle>{{ campaign.platform }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p class="campaign-desc">{{ campaign.description | slice:0:100 }}{{ campaign.description && campaign.description.length > 100 ? '...' : '' }}</p>
+            <div class="campaign-meta">
+              <div class="meta-item">
+                <mat-icon>attach_money</mat-icon>
+                <span>${{ campaign.budget | number }}</span>
+              </div>
+              <div class="meta-item">
+                <mat-icon>event</mat-icon>
+                <span>{{ campaign.endDate | date:'shortDate' }}</span>
+              </div>
+            </div>
+            <div class="campaign-footer">
+              <span class="status-chip" [ngClass]="'status-' + campaign.status.toLowerCase()">
+                {{ campaign.status }}
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div *ngIf="filteredCampaigns.length === 0 && campaigns.length > 0" class="empty-state">
+        <mat-icon>filter_list</mat-icon>
+        <h3>No {{ selectedStatus.toLowerCase() }} campaigns</h3>
+        <p>Try selecting a different status filter</p>
+      </div>
+
+      <div *ngIf="campaigns.length === 0" class="empty-state">
+        <mat-icon>campaign</mat-icon>
+        <h3>No campaigns yet</h3>
+        <p>Create your first campaign to start connecting with influencers</p>
+        <button mat-raised-button color="primary" (click)="createCampaign()">
+          <mat-icon>add</mat-icon>
+          Create Campaign
+        </button>
+      </div>
+    </section>
+
+    <!-- Recent Applications Section -->
+    <section class="applications-section" *ngIf="requests.length > 0">
+      <h2>
+        <mat-icon>inbox</mat-icon>
+        Recent Applications
+      </h2>
+      <div class="applications-list">
+        <mat-card *ngFor="let request of requests.slice(0, 5)" class="application-card">
+          <div class="app-avatar">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div class="app-content">
+            <strong>{{ request.influencer?.name || 'Unknown' }}</strong>
+            <span>applied for <em>{{ request.campaign?.name || 'Unknown Campaign' }}</em></span>
+            <p>{{ request.proposal | slice:0:60 }}{{ request.proposal && request.proposal.length > 60 ? '...' : '' }}</p>
+          </div>
+          <span class="status-chip" [ngClass]="'status-' + request.status.toLowerCase()">{{ request.status }}</span>
+        </mat-card>
+      </div>
+    </section>
+  </ng-container>
+</div>
+

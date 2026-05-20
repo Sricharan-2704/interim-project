@@ -1,0 +1,68 @@
+<div class="container">
+  <h1>{{ isBrand ? 'My Payments' : 'My Earnings' }}</h1>
+
+  <mat-card class="summary-card">
+    <h2>${{ totalAmount | number:'1.2-2' }}</h2>
+    <p>Total {{ isBrand ? 'Spent' : 'Earned' }}</p>
+  </mat-card>
+
+  <div *ngIf="isLoading" class="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <div class="table-container" *ngIf="payments.length > 0">
+      <table mat-table [dataSource]="payments" class="full-width">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let payment">#{{ payment.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="campaign">
+          <th mat-header-cell *matHeaderCellDef>Campaign</th>
+          <td mat-cell *matCellDef="let payment">{{ payment.campaign?.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>Amount</th>
+          <td mat-cell *matCellDef="let payment">${{ payment.amount | number:'1.2-2' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let payment">
+            <span class="status-chip" [ngClass]="'status-' + payment.status.toLowerCase()">
+              {{ payment.status }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let payment">
+            {{ payment.paidAt ? (payment.paidAt | date:'short') : (payment.createdAt | date:'short') }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let payment">
+            <button mat-button color="primary" *ngIf="isBrand && payment.status === 'PENDING'"
+                    (click)="completePayment(payment.id)">
+              Complete
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+
+    <div *ngIf="payments.length === 0" class="empty-state">
+      <mat-icon>payment</mat-icon>
+      <h3>No {{ isBrand ? 'payments' : 'earnings' }} yet</h3>
+    </div>
+  </ng-container>
+</div>
+

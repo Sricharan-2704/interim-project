@@ -1,0 +1,179 @@
+<div class="container">
+  <div class="page-header">
+    <h1>
+      <mat-icon>admin_panel_settings</mat-icon>
+      Admin Dashboard
+    </h1>
+    <p class="subtitle">Manage users, campaigns, and monitor platform activity</p>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    <mat-spinner></mat-spinner>
+    <p>Loading dashboard data...</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <mat-icon>error</mat-icon>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="loadData()">Retry</button>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <mat-card class="stat-card users">
+        <mat-icon>people</mat-icon>
+        <h2>{{ stats.totalUsers }}</h2>
+        <p>Total Users</p>
+      </mat-card>
+      <mat-card class="stat-card brands">
+        <mat-icon>business</mat-icon>
+        <h2>{{ stats.totalBrands }}</h2>
+        <p>Brands</p>
+      </mat-card>
+      <mat-card class="stat-card influencers">
+        <mat-icon>person_outline</mat-icon>
+        <h2>{{ stats.totalInfluencers }}</h2>
+        <p>Influencers</p>
+      </mat-card>
+      <mat-card class="stat-card earnings">
+        <mat-icon>payments</mat-icon>
+        <h2>${{ stats.totalEarnings | number:'1.0-0' }}</h2>
+        <p>Total Transactions</p>
+      </mat-card>
+      <mat-card class="stat-card campaigns">
+        <mat-icon>campaign</mat-icon>
+        <h2>{{ campaigns.length }}</h2>
+        <p>Active Campaigns</p>
+      </mat-card>
+      <mat-card class="stat-card pending">
+        <mat-icon>pending_actions</mat-icon>
+        <h2>0</h2>
+        <p>Pending Reviews</p>
+      </mat-card>
+    </div>
+
+    <!-- ...existing code... -->
+    <section class="users-section">
+      <div class="section-header">
+        <h2>
+          <mat-icon>manage_accounts</mat-icon>
+          User Management
+        </h2>
+        <mat-form-field appearance="outline" class="filter-dropdown">
+          <mat-label>Filter by Role</mat-label>
+          <mat-select [(value)]="selectedRole" (selectionChange)="filterUsers()">
+            <mat-option value="ALL">All Users</mat-option>
+            <mat-option value="ADMIN">Admins</mat-option>
+            <mat-option value="BRAND">Brands</mat-option>
+            <mat-option value="INFLUENCER">Influencers</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="table-container" *ngIf="filteredUsers.length > 0">
+        <table mat-table [dataSource]="filteredUsers" class="full-width">
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let user">#{{ user.id }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let user">{{ user.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>Role</th>
+            <td mat-cell *matCellDef="let user">
+              <span class="role-chip" [ngClass]="'role-' + user.role.toLowerCase()">
+                {{ user.role }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let user">
+              <button mat-icon-button color="warn" (click)="deleteUser(user.id)"
+                      *ngIf="user.role !== 'ADMIN'" matTooltip="Delete User">
+                <mat-icon>delete</mat-icon>
+              </button>
+              <span *ngIf="user.role === 'ADMIN'" class="admin-badge">Protected</span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedUserColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedUserColumns;"></tr>
+        </table>
+      </div>
+      <div *ngIf="filteredUsers.length === 0" class="empty-tab">
+        <mat-icon>people_outline</mat-icon>
+        <p>No users found for the selected filter</p>
+      </div>
+    </section>
+
+    <!-- Campaigns Overview Section -->
+    <section class="campaigns-section">
+      <div class="section-header">
+        <h2>
+          <mat-icon>campaign</mat-icon>
+          Campaigns Overview
+        </h2>
+      </div>
+
+      <div class="table-container" *ngIf="campaigns.length > 0">
+        <table mat-table [dataSource]="campaigns" class="full-width">
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let campaign">#{{ campaign.id }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Campaign Name</th>
+            <td mat-cell *matCellDef="let campaign">{{ campaign.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="brand">
+            <th mat-header-cell *matHeaderCellDef>Brand</th>
+            <td mat-cell *matCellDef="let campaign">{{ campaign.brand?.name || 'N/A' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="platform">
+            <th mat-header-cell *matHeaderCellDef>Platform</th>
+            <td mat-cell *matCellDef="let campaign">
+              <span class="platform-badge">{{ campaign.platform }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="budget">
+            <th mat-header-cell *matHeaderCellDef>Budget</th>
+            <td mat-cell *matCellDef="let campaign">${{ campaign.budget | number }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let campaign">
+              <span class="status-chip" [ngClass]="'status-' + campaign.status.toLowerCase()">
+                {{ campaign.status }}
+              </span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedCampaignColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedCampaignColumns;"></tr>
+        </table>
+      </div>
+      <div *ngIf="campaigns.length === 0" class="empty-tab">
+        <mat-icon>campaign</mat-icon>
+        <p>No campaigns found</p>
+      </div>
+    </section>
+  </ng-container>
+</div>
+

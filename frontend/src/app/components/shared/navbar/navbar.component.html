@@ -1,0 +1,66 @@
+<mat-toolbar color="primary" *ngIf="authService.isLoggedIn()" class="navbar">
+  <div class="navbar-content">
+    <span class="logo" (click)="goToDashboard()">
+      <mat-icon class="logo-icon">handshake</mat-icon>
+      <span class="logo-text">Sponsorship Hub</span>
+    </span>
+
+    <span class="spacer"></span>
+
+    <ng-container *ngIf="currentUser" class="nav-items">
+      <!-- Navigation based on role -->
+      <button mat-button routerLink="/campaigns" *ngIf="currentUser.role !== 'ADMIN'" class="nav-button">
+        <mat-icon>campaign</mat-icon>
+        <span>Campaigns</span>
+      </button>
+
+      <!-- Hide for admin - only show for brand and influencer -->
+      <button mat-button routerLink="/sponsorship-requests" *ngIf="currentUser.role !== 'ADMIN'" class="nav-button">
+        <mat-icon>assignment</mat-icon>
+        <span>Requests</span>
+      </button>
+
+      <!-- Hide for admin - only show for brand and influencer -->
+      <button mat-button routerLink="/payments" *ngIf="currentUser.role !== 'ADMIN'" class="nav-button">
+        <mat-icon>payment</mat-icon>
+        <span>Payments</span>
+      </button>
+
+      <!-- Hide for admin - only show for brand and influencer -->
+      <button mat-button routerLink="/ratings" *ngIf="currentUser.role !== 'ADMIN'" class="nav-button">
+        <mat-icon>star</mat-icon>
+        <span>Ratings</span>
+      </button>
+
+      <!-- ...existing code... -->
+      <button mat-icon-button routerLink="/notifications" [matBadge]="unreadCount"
+              [matBadgeHidden]="unreadCount === 0" matBadgeColor="accent" class="notification-btn">
+        <mat-icon>notifications</mat-icon>
+      </button>
+
+      <!-- User Menu -->
+      <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
+        <mat-icon>account_circle</mat-icon>
+        <span class="user-name">{{ currentUser.name }}</span>
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu" class="user-menu">
+        <button mat-menu-item (click)="goToDashboard()">
+          <mat-icon>dashboard</mat-icon>
+          <span>Dashboard</span>
+        </button>
+        <button mat-menu-item (click)="openChangePasswordDialog()">
+          <mat-icon>lock</mat-icon>
+          <span>Change Password</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </ng-container>
+  </div>
+</mat-toolbar>
+

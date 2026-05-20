@@ -1,0 +1,21 @@
+
+> sponsorship-app-frontend@0.0.0 start
+> ng serve
+
+Node.js version v25.2.1 detected.
+Odd numbered Node.js versions will not enter LTS status and should not be used for production. For more information, please see https://nodejs.org/en/about/previous-releases/.
+- Building...
+
+Initial chunk files | Names         |  Raw size
+main.js             | main          | 294.00 kB | 
+styles.css          | styles        |  96.35 kB | 
+polyfills.js        | polyfills     |  88.09 kB | 
+
+                    | Initial total | 478.44 kB
+
+Application bundle generation complete. [6.988 seconds]
+
+Watch mode enabled. Watching for file changes...
+  ➜  Local:   http://localhost:4200/
+  ➜  press h + enter to show help
+^C

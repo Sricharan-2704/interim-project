@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/components/campaign/campaign-form/campaign-form.component.scss"],
+  "sourcesContent": [".form-card {\r\n  max-width: 700px;\r\n  margin: 30px auto;\r\n  padding: 20px;\r\n}\r\n\r\n.full-width {\r\n  width: 100%;\r\n}\r\n\r\n.row {\r\n  display: flex;\r\n  gap: 20px;\r\n\r\n  mat-form-field {\r\n    flex: 1;\r\n  }\r\n}\r\n\r\n.action-buttons {\r\n  display: flex;\r\n  justify-content: flex-end;\r\n  gap: 10px;\r\n  margin-top: 20px;\r\n}\r\n\r\n@media (max-width: 600px) {\r\n  .row {\r\n    flex-direction: column;\r\n    gap: 0;\r\n  }\r\n}\r\n\r\n"],
+  "mappings": ";AAAA,CAAA;AACE,aAAA;AACA,UAAA,KAAA;AACA,WAAA;;AAGF,CAAA;AACE,SAAA;;AAGF,CAAA;AACE,WAAA;AACA,OAAA;;AAEA,CAJF,IAIE;AACE,QAAA;;AAIJ,CAAA;AACE,WAAA;AACA,mBAAA;AACA,OAAA;AACA,cAAA;;AAGF,OAAA,CAAA,SAAA,EAAA;AACE,GAjBF;AAkBI,oBAAA;AACA,SAAA;;;",
+  "names": []
+}
