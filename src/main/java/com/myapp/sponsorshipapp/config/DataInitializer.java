@@ -24,26 +24,26 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // Create admin user
-        if (!userRepository.existsByEmail("admin@sponsorship.com")) {
+        if (!userRepository.existsByEmail("admin@gmail.com")) {
             User admin = new User();
             admin.setName("Admin User");
-            admin.setEmail("admin@sponsorship.com");
-            admin.setPassword(passwordEncoder.encode("admin123"));
+            admin.setEmail("admin@gmail.com");
+            admin.setPassword(passwordEncoder.encode("admin@123"));
             admin.setRole(Role.ADMIN);
             userRepository.save(admin);
-            System.out.println("Admin user created: admin@sponsorship.com / admin123");
+            System.out.println("Admin user created: admin@gmail.com / admin@123");
         }
         
         // Create sample brand
-        if (!userRepository.existsByEmail("brand@example.com")) {
+        if (!userRepository.existsByEmail("brand@gmail.com")) {
             User brand = new User();
             brand.setName("Sample Brand");
-            brand.setEmail("brand@example.com");
-            brand.setPassword(passwordEncoder.encode("brand123"));
+            brand.setEmail("brand@gmail.com");
+            brand.setPassword(passwordEncoder.encode("brand@123"));
             brand.setRole(Role.BRAND);
             brand.setBio("A leading fashion brand looking for influencers");
             userRepository.save(brand);
-            System.out.println("Brand user created: brand@example.com / brand123");
+            System.out.println("Brand user created: brand@gmail.com / brand@123");
             
             // Create sample campaigns
             Campaign campaign1 = new Campaign();
@@ -74,15 +74,15 @@ public class DataInitializer implements CommandLineRunner {
         }
         
         // Create sample influencer
-        if (!userRepository.existsByEmail("influencer@example.com")) {
+        if (!userRepository.existsByEmail("influencer@gmail.com")) {
             User influencer = new User();
             influencer.setName("Sample Influencer");
-            influencer.setEmail("influencer@example.com");
-            influencer.setPassword(passwordEncoder.encode("influencer123"));
+            influencer.setEmail("influencer@gmail.com");
+            influencer.setPassword(passwordEncoder.encode("influencer@123"));
             influencer.setRole(Role.INFLUENCER);
             influencer.setBio("Fashion and lifestyle content creator with 100K followers");
             userRepository.save(influencer);
-            System.out.println("Influencer user created: influencer@example.com / influencer123");
+            System.out.println("Influencer user created: influencer@gmail.com / influencer@123");
         }
     }
 }
