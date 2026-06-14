@@ -1,4 +1,4 @@
-FROM maven:3.8.8-jdk-17 AS build
+FROM maven:3.9.4-eclipse-temurin-17 AS build
 WORKDIR /workspace
 
 # copy only what Maven needs first for better caching
@@ -7,7 +7,7 @@ COPY src ./src
 
 RUN mvn -B -DskipTests package
 
-FROM openjdk:17-slim
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 EXPOSE 8080
 
