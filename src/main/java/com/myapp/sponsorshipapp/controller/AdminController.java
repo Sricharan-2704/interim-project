@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200","https://gregarious-naiad-7592c9.netlify.app"})
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
     
