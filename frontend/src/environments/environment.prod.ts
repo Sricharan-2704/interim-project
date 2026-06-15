@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:7070/api'
+  apiUrl: 'https://sponsorship-app.onrender.com/api'
 };
 

@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/ratings")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200","https://gregarious-naiad-7592c9.netlify.app"})
 public class RatingController {
     
     @Autowired
