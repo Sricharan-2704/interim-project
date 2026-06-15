@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["rating-dialog.component.ts"],
+  "sourcesContent": ["\n    h2 {\n      display: flex;\n      align-items: center;\n      gap: 10px;\n      margin: 0;\n    }\n    .title-icon {\n      color: #ffc107;\n    }\n    .dialog-subtitle {\n      color: #666;\n      margin-bottom: 25px;\n      font-size: 14px;\n    }\n    .rating-stars {\n      display: flex;\n      justify-content: center;\n      gap: 8px;\n      margin-bottom: 10px;\n    }\n    .star-btn {\n      transform: scale(1.8);\n      color: #ddd;\n      transition: all 0.2s;\n    }\n    .star-btn.selected {\n      color: #ffc107;\n    }\n    .star-btn:hover {\n      transform: scale(2);\n    }\n    .rating-text {\n      text-align: center;\n      font-weight: 600;\n      font-size: 18px;\n      color: #ffc107;\n      margin-bottom: 25px;\n      min-height: 27px;\n    }\n    .full-width {\n      width: 100%;\n    }\n    mat-dialog-content {\n      min-width: 420px;\n      padding-top: 20px;\n    }\n    mat-dialog-actions button mat-icon {\n      margin-right: 5px;\n    }\n  "],
+  "mappings": ";AACI;AACE,WAAA;AACA,eAAA;AACA,OAAA;AACA,UAAA;;AAEF,CAAA;AACE,SAAA;;AAEF,CAAA;AACE,SAAA;AACA,iBAAA;AACA,aAAA;;AAEF,CAAA;AACE,WAAA;AACA,mBAAA;AACA,OAAA;AACA,iBAAA;;AAEF,CAAA;AACE,aAAA,MAAA;AACA,SAAA;AACA,cAAA,IAAA;;AAEF,CALA,QAKA,CAAA;AACE,SAAA;;AAEF,CARA,QAQA;AACE,aAAA,MAAA;;AAEF,CAAA;AACE,cAAA;AACA,eAAA;AACA,aAAA;AACA,SAAA;AACA,iBAAA;AACA,cAAA;;AAEF,CAAA;AACE,SAAA;;AAEF;AACE,aAAA;AACA,eAAA;;AAEF,mBAAA,OAAA;AACE,gBAAA;;",
+  "names": []
+}
