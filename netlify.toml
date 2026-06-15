@@ -1,6 +1,6 @@
 [build]
   command = "cd frontend && npm ci && npm run build -- --configuration production --base-href /"
-  publish = "frontend/dist/sponsorship-app-frontend"
+  publish = "frontend/dist/sponsorship-app-frontend/browser"
 
 [context.production.environment]
   # Example env var placeholder; set real values in Netlify UI if needed
